@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  psql:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=todo
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./services/db/scripts:/docker-entrypoint-initdb.d
+    command:
+      - postgres
+    healthcheck:
+      test: ["CMD", "psql", "-U", "postgres", "-c", "SELECT 1"]
+      retries: 3
+      timeout: 1s
+      interval: 1s
+      start_period: 1s
+  server:
+    image: golang:1.20-alpine
+    ports:
+      - "8080:8080"
+    tty: true
+    volumes:
+      - .:/app
+    depends_on:
+      - psql
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8080"]
+      retries: 3
+      timeout: 1s
+      interval: 1s
+      start_period: 1s
