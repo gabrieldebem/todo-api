@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/gabrieldebem/todo-api/packages/models"
+	m "github.com/gabrieldebem/todo-api/packages/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -20,7 +20,8 @@ func Init() *gorm.DB {
 
 func runMigration(db *gorm.DB) {
 	err := db.AutoMigrate(
-		&models.User{},
+		&m.User{},
+		&m.Task{},
 	)
 
 	if err != nil {

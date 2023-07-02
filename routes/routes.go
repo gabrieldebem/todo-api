@@ -1,9 +1,13 @@
 package routes
 
 import (
-	"github.com/gabrieldebem/todo-api/packages/actions"
+	"github.com/gabrieldebem/todo-api/packages/controllers"
+	"github.com/gabrieldebem/todo-api/packages/repositories"
 	"github.com/gin-gonic/gin"
 )
+
+var userController = controllers.UserController{Repository: repositories.UserRepository{}}
+var taskController = controllers.TaskController{Repository: repositories.TaskRepository{}}
 
 func Init() *gin.Engine {
 	r := gin.Default()
@@ -15,10 +19,14 @@ func Init() *gin.Engine {
 				"message": "Hello, World!",
 			})
 		})
-        api.GET("/users", actions.ListUsers)
-        api.GET("/users/:id", actions.FindUser)
-        api.POST("/users", actions.CreateUser)
+		api.GET("/users", userController.ListUsers)
+		api.GET("/users/:id", userController.FindUser)
+		api.POST("/users", userController.CreateUser)
+
+        api.GET("/tasks", taskController.ListTasks)
+        api.GET("/tasks/:id", taskController.FindTask)
+        api.POST("/tasks", taskController.CreateTask)
 	}
 
-    return r
+	return r
 }
