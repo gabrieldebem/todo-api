@@ -63,8 +63,16 @@ func (t TaskController) CreateTask(c *gin.Context) {
     var taskDto requests.CreateTaskRequest
 
     c.Bind(&taskDto)
-    var task models.Task = taskDto.ToTask()
+
     var err error
+
+    err = taskDto.Validate(c)
+
+    if err != nil {
+        return
+    }
+    
+    var task models.Task = taskDto.ToTask()
 
     task, err = t.Repository.Create(&task)
 

@@ -17,8 +17,15 @@ func (u UserController) CreateUser(c *gin.Context) {
 	var r requests.CreateUserRequest
 
 	c.Bind(&r)
-	user := r.ToUser()
 	var err error
+
+    err = r.Validate(c)
+
+    if err != nil {
+        return
+    }
+
+	user := r.ToUser()
 
 	user, err = u.Repository.Create(&user)
 
