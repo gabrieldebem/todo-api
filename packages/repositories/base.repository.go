@@ -15,19 +15,29 @@ func (r BaseRepository[T]) GetDb() *gorm.DB {
 func (r *BaseRepository[T]) FindAll() ([]T, error) {
 	db := r.GetDb()
 
-	var tasks []T
-	err := db.Find(&tasks).Error
+	var model []T
+	err := db.Find(&model).Error
 
-	return tasks, err
+	return model, err
 }
 
-func (r *BaseRepository[T]) FindWhere(query interface{}, args ...interface{}) ([]T, error) {
+func (r *BaseRepository[T]) FindAndLoadRelationship(query interface{}, relationships string, args ...interface{}) ([]T, error) {
 	db := r.GetDb()
 
-	var tasks []T
-	err := db.Where(query, args...).Find(&tasks).Error
+	var model []T
+	err := db.Where(query, args...).Preload(relationships).Find(&model).Error
 
-	return tasks, err
+	return model, err
+
+}
+
+func (r *BaseRepository[T]) FindWhere(query interface{}, relationships string, args ...interface{}) ([]T, error) {
+	db := r.GetDb()
+
+	var model []T
+	err := db.Where(query, args...).Find(&model).Error
+
+	return model, err
 }
 
 func (r *BaseRepository[T]) First(u *T) (T, error) {

@@ -2,12 +2,14 @@ package routes
 
 import (
 	"github.com/gabrieldebem/todo-api/packages/controllers"
+	"github.com/gabrieldebem/todo-api/packages/middlewares"
 	"github.com/gabrieldebem/todo-api/packages/repositories"
 	"github.com/gin-gonic/gin"
 )
 
 var userController = controllers.UserController{Repository: repositories.UserRepository{}}
 var taskController = controllers.TaskController{Repository: repositories.TaskRepository{}}
+var authController = controllers.AuthController{UserRepository: &repositories.UserRepository{}}
 
 func Init() *gin.Engine {
 	r := gin.Default()
@@ -19,13 +21,18 @@ func Init() *gin.Engine {
 				"message": "Hello, World!",
 			})
 		})
-		api.GET("/users", userController.ListUsers)
-		api.GET("/users/:id", userController.FindUser)
+		api.POST("/login", authController.Login)
 		api.POST("/users", userController.CreateUser)
 
-        api.GET("/tasks", taskController.ListTasks)
-        api.GET("/tasks/:id", taskController.FindTask)
-        api.POST("/tasks", taskController.CreateTask)
+		auth := api.Group("/")
+		auth.Use(middlewares.AuthorizedMiddleware)
+		{
+			auth.GET("/users", userController.FindUser)
+
+			auth.GET("/tasks", taskController.ListTasks)
+			auth.GET("/tasks/:id", taskController.FindTask)
+			auth.POST("/tasks", taskController.CreateTask)
+		}
 	}
 
 	return r

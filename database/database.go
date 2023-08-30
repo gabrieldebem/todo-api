@@ -22,6 +22,7 @@ func runMigration(db *gorm.DB) {
 	err := db.AutoMigrate(
 		&m.User{},
 		&m.Task{},
+		&m.AccessToken{},
 	)
 
 	if err != nil {
